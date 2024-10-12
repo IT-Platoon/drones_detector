@@ -1,0 +1,144 @@
+volumes:
+  postgres_data:
+  redis_data:
+
+services:
+  nginx:
+    container_name: 'nginx'
+    restart: always
+    build:
+      context: .
+      dockerfile: ./nginx/Dockerfile
+    ports:
+      - 80:80
+    depends_on:
+      - server
+    environment:
+      - FLOWER_PORT=${FLOWER_PORT}
+
+  postgres:
+    image: postgres:14
+    container_name: 'postgres'
+    restart: always
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    expose:
+      - ${POSTGRES_PORT}
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+    command: postgres -p ${POSTGRES_PORT}
+
+  server:
+    container_name: 'server'
+    restart: always
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+      args:
+        MODE: "--without dev"
+        APP_HOME: "/server"
+    expose:
+      - ${APP_PORT}
+    volumes:
+      - ./logs/:/server/logs/
+      - ./server/media/:/server/media/
+    environment:
+      - ENV=production
+      - APP_PORT=${APP_PORT}
+      - APP_HOST=${APP_HOST}
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_HOST=${POSTGRES_HOST}
+      - POSTGRES_PORT=${POSTGRES_PORT}
+    depends_on:
+      - postgres
+    command: make run-prod
+  
+  # redis:
+  #   image: redis:6
+  #   container_name: 'redis'
+  #   restart: always
+  #   expose:
+  #     - 6379
+  #   volumes:
+  #     - redis_data:/data
+  
+  # celery_worker:
+  #   container_name: 'celery_worker'
+  #   restart: always
+  #   build:
+  #     context: ./server
+  #     dockerfile: Dockerfile
+  #     args:
+  #       MODE: "--without dev"
+  #       APP_HOME: "/server"
+  #   volumes:
+  #     - ./logs/:/server/logs/
+  #     - ./server/media/:/server/media/
+  #   environment:
+  #     - ENV=production
+  #     - CELERY_BROKER_URL=${REDIS_URL}
+  #     - CELERY_RESULT_BACKEND=${REDIS_URL}
+  #     - POSTGRES_DB=${POSTGRES_DB}
+  #     - POSTGRES_USER=${POSTGRES_USER}
+  #     - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+  #     - POSTGRES_HOST=${POSTGRES_HOST}
+  #     - POSTGRES_PORT=${POSTGRES_PORT}
+  #   depends_on:
+  #     - postgres
+  #     - redis
+  #   command: celery --app=app.config.celery_app.celery_app worker --pool=threads --loglevel=INFO -f ./logs/celery_worker.log
+
+  # celery_beat:
+  #   container_name: 'celery_beat'
+  #   restart: always
+  #   build:
+  #     context: ./server
+  #     dockerfile: Dockerfile
+  #     args:
+  #       MODE: "--without dev"
+  #       APP_HOME: "/server"
+  #   volumes:
+  #     - ./logs/:/server/logs/
+  #     - ./server/media/:/server/media/
+  #   environment:
+  #     - ENV=production
+  #     - CELERY_BROKER_URL=${REDIS_URL}
+  #     - CELERY_RESULT_BACKEND=${REDIS_URL}
+  #     - POSTGRES_DB=${POSTGRES_DB}
+  #     - POSTGRES_USER=${POSTGRES_USER}
+  #     - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+  #     - POSTGRES_HOST=${POSTGRES_HOST}
+  #     - POSTGRES_PORT=${POSTGRES_PORT}
+  #   depends_on:
+  #     - postgres
+  #     - redis
+  #   command: celery --app=app.config.celery_app.celery_app beat --schedule=celerybeat-schedule --loglevel=INFO -f ./logs/celery_beat.log
+
+  # flower:
+  #   container_name: 'flower'
+  #   restart: always
+  #   build:
+  #     context: ./server
+  #     dockerfile: Dockerfile
+  #     args:
+  #       MODE: "--without dev"
+  #       APP_HOME: "/server"
+  #   ports:
+  #     - "${FLOWER_PORT}:${FLOWER_PORT}"
+  #   environment:
+  #     - ENV=production
+  #     - CELERY_BROKER_URL=${REDIS_URL}
+  #     - CELERY_RESULT_BACKEND=${REDIS_URL}
+  #     - POSTGRES_DB=${POSTGRES_DB}
+  #     - POSTGRES_USER=${POSTGRES_USER}
+  #     - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+  #     - POSTGRES_HOST=${POSTGRES_HOST}
+  #     - POSTGRES_PORT=${POSTGRES_PORT}
+  #   depends_on:
+  #     - redis
+  #     - celery_worker
+  #   command: celery --app=app.config.celery_app.celery_app flower --port=${FLOWER_PORT} --url_prefix=flower
