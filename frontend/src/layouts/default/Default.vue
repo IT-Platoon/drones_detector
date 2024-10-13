@@ -1,6 +1,6 @@
 <template>
   <v-app>
-    <v-app-bar color="teal-lighten-5" title="PC-Part Detector"></v-app-bar>
+    <v-app-bar color="teal-lighten-5" title="Drones Detector"></v-app-bar>
     <default-view />
   </v-app>
 </template>

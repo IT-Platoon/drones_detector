@@ -1,4 +1,4 @@
-# PC Part Detector
+# Drones Detector
 
 ### Требования
 
@@ -9,6 +9,7 @@
 ### Модели
 
 Класс-обертка находится по пути: ```server/app/services/model/model.py```
+
 Модель для предсказания ```server/app/services/model/weights/best.pt```
 
 ### Запуск

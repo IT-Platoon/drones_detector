@@ -20,7 +20,7 @@ def get_app() -> FastAPI:
     """
     Creates application and all dependable objects.
     """
-    description = "Project for detection PC parts"
+    description = "Project for detection drones"
 
     tags_metadata = [
         {
