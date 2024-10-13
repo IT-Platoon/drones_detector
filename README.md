@@ -12,6 +12,8 @@
 
 Модель для предсказания ```server/app/services/model/weights/best_model.pt```
 
+Веса: https://drive.google.com/drive/folders/1iw2NeE63xp6K8xf0loTWu0u2RIvmqM9k?usp=sharing
+
 ### Сервисы
 
 - 0.0.0.0:8000 - Backend
