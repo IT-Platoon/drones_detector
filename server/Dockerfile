@@ -12,4 +12,8 @@ WORKDIR /server
 
 RUN pip install poetry && \
     poetry config virtualenvs.create false && \
-    poetry install --with dev --no-interaction --no-ansi --no-root
+    poetry install --with dev --no-interaction --no-ansi --no-root && \
+    poetry cache clear . --all && \
+    pip cache purge && \
+    rm -r ~/.cache/pip && \
+    rm -rf /root/.cache/pip

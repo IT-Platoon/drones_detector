@@ -68,7 +68,7 @@ class YOLOWrapper(metaclass=Singleton):
             iou=self.iou,
             verbose=False,
         )[0]
-        boxes = json.loads(result.tojson())
+        boxes = json.loads(result.to_json())
         classes = []
         for item in boxes:
             classes.append(item["name"])

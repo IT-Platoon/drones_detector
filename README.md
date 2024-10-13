@@ -6,6 +6,11 @@
 
 - `Docker` и `docker-compose`
 
+### Модели
+
+Класс-обертка находится по пути: ```server/app/services/model/model.py```
+Модель для предсказания ```server/app/services/model/weights/best.pt```
+
 ### Запуск
 
 Запуск приложения:

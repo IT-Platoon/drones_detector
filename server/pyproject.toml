@@ -20,7 +20,7 @@ celery = "5.3.1"
 redis = "^4.6.0"
 flower = "^2.0.0"
 gunicorn = "^21.2.0"
-ultralytics = "8.0.201"
+ultralytics = "8.3.11"
 
 [tool.poetry.dev-dependencies]
 ConfigArgParse = "^1.5.3"
